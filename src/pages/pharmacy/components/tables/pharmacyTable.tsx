@@ -72,6 +72,24 @@ function PharmacyTable({ treatments }) {
     await deleteMutate(rowData.id);
     setShowDelete(false);
   };
+
+  const customStyles = {
+    headCells: {
+      style: {
+        backgroundColor: "#ffff",
+        text: "bold",
+        fontWeight: "bold",
+        fontSize: "13px",
+      },
+    },
+    rows: {
+      style: {
+        minHeight: "56px",
+        textTransform: "capitalize",
+        cursor: "default",
+      },
+    },
+  };
   const columns = [
     {
       name: "Date",
@@ -80,17 +98,18 @@ function PharmacyTable({ treatments }) {
       width: "100px",
     },
     {
-      name: "Administered By",
-      selector: (row) =>
-        `${row?.administeredBy?.firstName} ${row?.administeredBy?.lastName}`,
-      sortable: true,
-    },
-    {
       name: "Patient",
       selector: (row) =>
         `${row?.patientId?.firstName} ${row?.patientId?.lastName}`,
       sortable: true,
     },
+    {
+      name: "Administered By",
+      selector: (row) =>
+        `${row?.administeredBy?.firstName} ${row?.administeredBy?.lastName}`,
+      sortable: true,
+    },
+
     {
       name: "Patient ID",
       selector: (row) => `${row?.patientId?.patientId}`,
@@ -252,6 +271,23 @@ function PharmacyTable({ treatments }) {
         />
       )}
       <DataTable
+        customStyles={{
+          headCells: {
+            style: {
+              backgroundColor: customStyles.headCells.style.backgroundColor,
+              text: customStyles.headCells.style.text,
+              fontWeight: customStyles.headCells.style.fontWeight,
+              fontSize: customStyles.headCells.style.fontSize,
+            },
+          },
+          rows: {
+            style: {
+              minHeight: customStyles.rows.style.minHeight,
+              textTransform: "none", // Update the textTransform property to have the correct type
+              cursor: customStyles.rows.style.cursor,
+            },
+          },
+        }}
         columns={columns}
         data={
           // treatments?.data

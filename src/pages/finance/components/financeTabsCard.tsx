@@ -7,7 +7,7 @@ import {
 import BillingTable from "./tables/billingTable";
 import PaymentTable from "./tables/paymentTable";
 
-function FinanceTabsCard() {
+function FinanceTabsCard( { patientData }) {
   return (
     <div className="bg-white rounded-[.5rem] py-5 w-full h-full">
       <Tabs defaultValue="Billing">
@@ -24,7 +24,7 @@ function FinanceTabsCard() {
             <BillingTable />
           </TabsContent>
           <TabsContent value="Reciepts">
-            <PaymentTable />
+            <PaymentTable patientData={patientData} />
           </TabsContent>
         </div>
       </Tabs>
