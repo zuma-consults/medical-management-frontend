@@ -16,7 +16,7 @@ function FinanceId() {
   return (
     <div className="Patients">
       <PatientInfoHeader patientData={data.data} />
-      <FinanceTabsCard />
+      <FinanceTabsCard patientData={data.data} />
     </div>
   );
 }

@@ -13,7 +13,7 @@ const PrintRadiologyResult = forwardRef<HTMLDivElement, PrintResultProps>(
     const { selectedRowData, rePrint, printData } = props;
 
     const MainData = selectedRowData;
-    const { panelId, id, patientId, schemeId, centerId } = MainData;
+    const { testId, id, patientId, schemeId, centerId } = MainData;
 
     // Return null if id is undefined or null
     if (!id) {
@@ -129,22 +129,14 @@ const PrintRadiologyResult = forwardRef<HTMLDivElement, PrintResultProps>(
             </tr>
             <tr>
               <td className="font-bold border-r border-b pl-2">
-                Lab Department:
+                Radiology Unit:
               </td>
-              <td className="border-r border-b pl-2">{centerId.center}</td>
-              <td className="font-bold border-r border-b border-t pl-2">
-                Specimen:
-              </td>
-              <td className="border-b pl-2 border-t">
-                {panelId?.specimenId.specimen}
-              </td>
+              <td className=" border-b pl-2">{centerId.center}</td>
             </tr>
           </table>
         </div>
         <div className="border-[2px] mt-5">
-          <h1 className="capitalize font-extrabold text-2xl">
-            {panelId?.panel}
-          </h1>
+          <h1 className="capitalize font-extrabold text-2xl">{testId?.test}</h1>
           <table
             className="w-full rounded-[.3rem] text-left border-collapse"
             style={{ borderSpacing: "0 1rem" }}
