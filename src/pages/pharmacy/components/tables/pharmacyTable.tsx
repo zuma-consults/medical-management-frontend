@@ -290,10 +290,11 @@ function PharmacyTable({ treatments }) {
         }}
         columns={columns}
         data={
-          // treatments?.data
-          //   ? treatments?.data
-          //   : patientPharmarcy?.data?.treatments || []
-          patientPharmarcy?.data?.treatments
+          Array.isArray(treatments?.data)
+            ? treatments.data
+            : treatments?.data?.treatments ||
+              patientPharmarcy?.data?.treatments ||
+              []
         }
         expandableRows
         expandableRowsComponent={ExpandedComponent}

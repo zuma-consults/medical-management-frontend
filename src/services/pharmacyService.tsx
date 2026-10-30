@@ -142,6 +142,14 @@ class pharmacyService {
     };
     return request(options);
   }
+
+  public async searchTreatments(search: string) {
+    const options: AxiosRequestConfig = {
+      method: "GET",
+      url: `/search/treatment?search=${encodeURIComponent(search)}`,
+    };
+    return request(options);
+  }
 }
 
 export default new pharmacyService();

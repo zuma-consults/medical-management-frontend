@@ -77,7 +77,7 @@ class UserService {
 
   public async updateUser(id: string, data: object) {
     const options: AxiosRequestConfig = {
-      method: "POST",
+      method: "PUT",
       url: `/user/${id}`,
       data,
     };

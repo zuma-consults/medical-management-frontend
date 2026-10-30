@@ -1,7 +1,6 @@
-import { useQuery, useMutation, QueryClient } from "react-query";
+import { useQuery, useMutation } from "react-query";
+import { queryClient } from "../../lib/queryClient";
 import PatientService, { NewPatientData } from "../../services/patientService";
-
-const queryClient = new QueryClient();
 
 export const useGetPatients = (page: number) => {
   return useQuery(["patients", page], () => PatientService.getPatients(page), {

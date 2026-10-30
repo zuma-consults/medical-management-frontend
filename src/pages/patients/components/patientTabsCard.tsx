@@ -52,7 +52,7 @@ function PatientTabsCard({ id, patientData }) {
             <NursingTable />
           </TabsContent>
           <TabsContent value="finance">
-            <FinanceTable />
+            <FinanceTable id={id} />
           </TabsContent>
         </div>
       </Tabs>

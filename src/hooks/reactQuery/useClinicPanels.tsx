@@ -1,9 +1,8 @@
-import { useQuery, useMutation, QueryClient } from "react-query";
+import { useQuery, useMutation } from "react-query";
+import { queryClient } from "../../lib/queryClient";
 import ClinicPanelService, {
   NewClinicPanelData,
 } from "../../services/clinicPanelService";
-
-const queryClient = new QueryClient();
 
 export const useGetClinicPanel = () => {
   return useQuery("ClinicPanel", ClinicPanelService.getClinicPanel);

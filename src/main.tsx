@@ -5,9 +5,8 @@ import App from "./App.tsx";
 import "./global.css";
 import { BrowserRouter } from "react-router-dom";
 import { ReactQueryDevtools } from "react-query/devtools";
-import { QueryClient, QueryClientProvider } from "react-query";
-
-const queryClient = new QueryClient();
+import { QueryClientProvider } from "react-query";
+import { queryClient } from "./lib/queryClient";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <>

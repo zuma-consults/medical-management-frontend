@@ -1,10 +1,9 @@
-import { useQuery, useMutation, QueryClient } from "react-query";
+import { useQuery, useMutation } from "react-query";
+import { queryClient } from "../../lib/queryClient";
 import pharmacyService, {
   NewPharmacyData,
   TreatmentData,
 } from "../../services/pharmacyService";
-const queryClient = new QueryClient();
-
 export const useGetPharmacy = () => {
   return useQuery("Pharmacy", pharmacyService.getPharmacy);
 };
@@ -47,6 +46,14 @@ export const useDeletePharmacy = () => {
 //pharmacy Order
 export const useGetTreatments = () => {
   return useQuery("Treatment", pharmacyService.getTreatments);
+};
+
+export const useSearchTreatments = (search: string) => {
+  return useQuery(
+    ["Treatment", "search", search],
+    () => pharmacyService.searchTreatments(search),
+    { enabled: false },
+  );
 };
 
 export const useGetTreatmentById = (id: string) => {

@@ -1,14 +1,17 @@
-import { useQuery, useMutation, QueryClient } from "react-query";
+import { useQuery, useMutation } from "react-query";
+import { queryClient } from "../../lib/queryClient";
 import FinanceService from "../../services/financeService";
 
-const queryClient = new QueryClient();
-
 export const useUserFinance = (id: string) => {
-  return useQuery(["Finance", id], () => FinanceService.getUserFinance(id));
+  return useQuery(["Finance", "outstanding", id], () =>
+    FinanceService.getUserFinance(id),
+  );
 };
 
 export const useUserReciepts = (id: string) => {
-  return useQuery(["Finance", id], () => FinanceService.getUserReciepts(id));
+  return useQuery(["Finance", "receipts", id], () =>
+    FinanceService.getUserReciepts(id),
+  );
 };
 
 export const useMakePayment = () => {

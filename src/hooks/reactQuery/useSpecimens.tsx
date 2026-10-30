@@ -1,9 +1,8 @@
-import { useQuery, useMutation, QueryClient } from "react-query";
+import { useQuery, useMutation } from "react-query";
+import { queryClient } from "../../lib/queryClient";
 import SpecimenService, {
   NewSpecimenData,
 } from "../../services/specimenService";
-
-const queryClient = new QueryClient();
 
 export const useGetSpecimen = () => {
   return useQuery("Specimen", SpecimenService.getSpecimen);

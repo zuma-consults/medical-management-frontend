@@ -1,7 +1,6 @@
-import { useQuery, useMutation, QueryClient } from "react-query";
+import { useQuery, useMutation } from "react-query";
+import { queryClient } from "../../lib/queryClient";
 import LabService, { NewLabData } from "../../services/labService";
-
-const queryClient = new QueryClient();
 
 // export const useGetLab = () => {
 //   return useQuery("Lab", LabService.getLab);

@@ -1,9 +1,8 @@
-import { useQuery, useMutation, QueryClient } from "react-query";
+import { useQuery, useMutation } from "react-query";
+import { queryClient } from "../../lib/queryClient";
 import ClinicCenterService, {
   NewClinicCentertData,
 } from "../../services/clinicCenterService";
-
-const queryClient = new QueryClient();
 
 export const useGetClinicCenter = () => {
   return useQuery("clinicCenter", ClinicCenterService.getClinicCenter);

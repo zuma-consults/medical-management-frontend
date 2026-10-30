@@ -1,9 +1,12 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useMemo, useState } from "react";
 import { FaSearch } from "react-icons/fa";
 import DataTable from "react-data-table-component";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import {
   useDeleteUser,
   useGetUsers,
+  useUpdateUser,
 } from "../../../../hooks/reactQuery/useUser";
 import Loader from "../../../../components/ui/loader";
 import { toast } from "react-toastify";
@@ -14,100 +17,123 @@ import {
   DropdownMenuPortal,
   DropdownMenuTrigger,
 } from "../../../../components/ui/dropdown-menu";
-import { useNavigate } from "react-router-dom";
 
 function UserTable() {
-  const navigate = useNavigate();
+  const [search, setSearch] = useState("");
   const { data: users, isLoading } = useGetUsers();
   const {
     mutate: deleteUser,
     isLoading: isDeleteUserLoading,
-    data: DeleteUserData,
+    isSuccess: deleteSuccess,
+    reset: resetDelete,
   } = useDeleteUser();
+  const {
+    mutate: updateUser,
+    isLoading: isUpdateLoading,
+    isSuccess: updateSuccess,
+    reset: resetUpdate,
+  } = useUpdateUser();
 
-  if (isLoading || isDeleteUserLoading) {
+  const rows = useMemo(() => {
+    const list = Array.isArray(users?.data) ? users.data : [];
+    if (!search.trim()) return list;
+    const q = search.toLowerCase();
+    return list.filter((u: any) =>
+      [u.firstName, u.lastName, u.username, u.email]
+        .filter(Boolean)
+        .some((v: string) => v.toLowerCase().includes(q)),
+    );
+  }, [users, search]);
+
+  if (isLoading || isDeleteUserLoading || isUpdateLoading) {
     return <Loader />;
   }
 
-  if (DeleteUserData && DeleteUserData?.status) {
-    toast.success("User Deleted");
+  if (deleteSuccess) {
+    toast.success("User deactivated");
+    resetDelete();
   }
 
-  const handleDeleteUser = async (id: string) => {
-    try {
-      await deleteUser(id);
-    } catch (error) {
-      console.error("Error deleting user:", error);
+  if (updateSuccess) {
+    toast.success("User updated");
+    resetUpdate();
+  }
+
+  const handleDeactivate = (id: string) => {
+    updateUser({ id, data: { suspend: true, status: "inactive" } });
+  };
+
+  const handleActivate = (id: string) => {
+    updateUser({ id, data: { suspend: false, status: "active" } });
+  };
+
+  const handleDeleteUser = (id: string) => {
+    if (
+      window.confirm(
+        "Deactivate this user? They will no longer be able to sign in.",
+      )
+    ) {
+      deleteUser(id);
     }
   };
+
   const columns = [
     {
       name: "First Name",
-      selector: "firstName",
+      selector: (row: any) => row.firstName,
       sortable: true,
     },
     {
       name: "Last Name",
-      selector: "lastName",
+      selector: (row: any) => row.lastName,
       sortable: true,
     },
     {
       name: "Username",
-      selector: "username",
+      selector: (row: any) => row.username || "—",
       sortable: true,
     },
     {
       name: "Email",
-      selector: "email",
+      selector: (row: any) => row.email,
       sortable: true,
       width: "250px",
     },
     {
+      name: "Roles",
+      selector: (row: any) =>
+        Array.isArray(row.role) ? row.role.join(", ") : row.role || "—",
+      wrap: true,
+    },
+    {
       name: "Status",
-      selector: "status",
+      selector: (row: any) =>
+        row.suspend ? "suspended" : row.status || "—",
       sortable: true,
     },
     {
-      cell: (row) => (
+      cell: (row: any) => (
         <div className="w-full flex justify-end items-center">
           <div className="w-[30px] h-[30px] rounded-full flex justify-center items-center hover:bg-ha-secondary1">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="IconButton" aria-label="Customise options">
+                <button className="IconButton" aria-label="User actions">
                   <BsThreeDotsVertical style={{ color: "black" }} />
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuPortal>
                 <DropdownMenuContent>
-                  <DropdownMenuItem
-                    onClick={() => {
-                      navigate("/forgot");
-                    }}
-                  >
-                    Reset Password
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => {
-                      handleDeleteUser(row.id);
-                    }}
-                  >
-                    Delete User
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => {
-                      // Handle edit user
-                      console.log("Edit User Clicked");
-                    }}
-                  >
-                    Edit User
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => {
-                      // Handle deactivate user
-                      console.log("Deactivate User Clicked");
-                    }}
-                  >
-                    Deactivate User
+                  {row.suspend || row.status === "inactive" ? (
+                    <DropdownMenuItem onClick={() => handleActivate(row.id)}>
+                      Activate User
+                    </DropdownMenuItem>
+                  ) : (
+                    <DropdownMenuItem onClick={() => handleDeactivate(row.id)}>
+                      Deactivate User
+                    </DropdownMenuItem>
+                  )}
+                  <DropdownMenuItem onClick={() => handleDeleteUser(row.id)}>
+                    Suspend User
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenuPortal>
@@ -125,6 +151,8 @@ function UserTable() {
         <div className="relative w-[300px]">
           <input
             type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by Name"
             className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
           />
@@ -133,8 +161,7 @@ function UserTable() {
           </div>
         </div>
       </div>
-      {/* @ts-expect-error: Just ignore the next line */}
-      <DataTable columns={columns} data={users.data} />
+      <DataTable columns={columns} data={rows} pagination />
     </div>
   );
 }

@@ -1,9 +1,8 @@
-import { useQuery, useMutation, QueryClient } from "react-query";
+import { useQuery, useMutation } from "react-query";
+import { queryClient } from "../../lib/queryClient";
 import radiologyService, {
   NewRadiologyData,
 } from "../../services/radiologyService";
-
-const queryClient = new QueryClient();
 
 export const useGetRadiologyById = (id: string) => {
   return useQuery(["Radiology", id], () =>
