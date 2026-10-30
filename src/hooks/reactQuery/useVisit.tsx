@@ -1,7 +1,6 @@
-import { useQuery, useMutation, QueryClient } from "react-query";
+import { useQuery, useMutation } from "react-query";
+import { queryClient } from "../../lib/queryClient";
 import VisitService, { FormData, vitals } from "../../services/visitService";
-const queryClient = new QueryClient();
-
 // Function to create a unique query key
 export const createQueryKey = (endpoint: string, params?: any) => {
   return [endpoint, params];

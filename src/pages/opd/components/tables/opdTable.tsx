@@ -176,16 +176,18 @@ function OpdTable({ consults }) {
   };
 
   const handleSubmitVitals = async () => {
-    if (consultation?.paid) {
-      const vitalsData = Object.entries(formData).map(([name, value]) => ({
+    const vitalsData = Object.entries(formData)
+      .filter(([, value]) => value !== "" && value != null)
+      .map(([name, value]) => ({
         name,
-        value: value.toString(),
+        type: name,
+        value: String(value),
       }));
-      console.log(consultation, vitalsData, 'hi')
-      await vitalsMutate({ id: consultation?.id, data: vitalsData });
-    } else {
-      toast.error('This consultation has not been paid for')
+    if (!vitalsData.length) {
+      toast.error("Enter at least one vital sign before saving");
+      return;
     }
+    await vitalsMutate({ id: consultation?.id, data: vitalsData });
   };
 
   return (

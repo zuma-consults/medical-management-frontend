@@ -1,69 +1,69 @@
 import { BiSearchAlt } from "react-icons/bi";
 import FilterHeader from "../../../components/ui/filterheaders/filterHeader";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Loader from "../../../components/ui/loader";
-// import { useGetUserByToken } from "../../../hooks/reactQuery/useUser";
 import {
-  useAddTreatment,
   useGetTreatments,
+  useSearchTreatments,
 } from "../../../hooks/reactQuery/usePharmacy";
-import { toast } from "react-toastify";
 
-function Patients({ setreatments }) {
+function PharmacyFilterHeader({ setreatments }) {
   const [search, setSearch] = useState("");
-  // const { isLoading, data, refetch } = useGetTreatments(search);
   const { isLoading, data, refetch } = useGetTreatments();
   const {
-    data: consultationData,
-    isLoading: loadingConsults,
-    mutate: createMutate,
-  } = useAddTreatment();
+    data: searchData,
+    isLoading: searching,
+    refetch: searchRefetch,
+  } = useSearchTreatments(search);
 
-  setreatments(data);
+  useEffect(() => {
+    if (searchData?.data) {
+      setreatments(searchData);
+    } else if (data) {
+      setreatments(data);
+    }
+  }, [data, searchData, setreatments]);
 
-
-  if (consultationData && consultationData?.status) {
-    toast.success("Successfully Created Consultation");
-    createMutate(null);
-  }
-
-  if (isLoading || loadingConsults) {
+  if (isLoading || searching) {
     return <Loader />;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleChange = (event: any) => {
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(event.target.value);
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleKeyDown = async (
     event: React.KeyboardEvent<HTMLInputElement>,
   ) => {
     if (event.key === "Enter") {
       event.preventDefault();
-      await refetch();
+      if (search.trim()) {
+        await searchRefetch();
+      } else {
+        await refetch();
+      }
     }
   };
 
-  const resetHandler = () => {
+  const resetHandler = async () => {
     setSearch("");
+    await refetch();
   };
 
   const searchHandler = async () => {
-    await refetch();
+    if (search.trim()) {
+      await searchRefetch();
+    } else {
+      await refetch();
+    }
   };
 
   return (
     <div className="Patients">
       <FilterHeader
-        title="All Pharmacy Order"
-        // buttonTitle="New Consultation"
+        title="All Pharmacy Orders"
         resetFilter={resetHandler}
         search={searchHandler}
-        // handleCreate={() => {
-        //   setShowCreate(true)
-        // }}
       >
         <form className="grid">
           <div className="flex w-full border rounded-lg items-center px-5">
@@ -74,7 +74,7 @@ function Patients({ setreatments }) {
               type="text"
               name="search"
               value={search}
-              placeholder="Search for patients"
+              placeholder="Search by patient name, ID, phone, or email"
               className="border-none border outline-none w-[100%] inputLess"
               onChange={handleChange}
               onKeyDown={handleKeyDown}
@@ -86,4 +86,4 @@ function Patients({ setreatments }) {
   );
 }
 
-export default Patients;
+export default PharmacyFilterHeader;

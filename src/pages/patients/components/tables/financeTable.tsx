@@ -1,141 +1,111 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import DataTable from "react-data-table-component";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+import {
+  useUserFinance,
+  useUserReciepts,
+} from "../../../../hooks/reactQuery/useFinance";
+import Loader from "../../../../components/ui/loader";
+import { formatDate } from "../../../../hooks/formattedDate";
 
-function FinanceTable() {
-  interface Patient {
-    id: number;
-    firstName: string;
-    lastName: string;
-    patientId: string;
-    gender: string;
-    dateOfBirth: string;
-    phoneNumber: string;
-    lastAppointmentDate: string;
+function FinanceTable({ id }: { id: string }) {
+  const { data: outstanding, isLoading: loadingBills } = useUserFinance(id);
+  const { data: receipts, isLoading: loadingReceipts } = useUserReciepts(id);
+
+  if (loadingBills || loadingReceipts) {
+    return <Loader />;
   }
-  const data = [
-    {
-      id: 1,
-      firstName: "John",
-      lastName: "Doe",
-      patientId: "12345",
-      gender: "Male",
-      dateOfBirth: "01/01/1990",
-      phoneNumber: "555-1234",
-      lastAppointmentDate: "02/15/2022",
-    },
-    {
-      id: 2,
-      firstName: "John",
-      lastName: "Doe",
-      patientId: "12345",
-      gender: "Male",
-      dateOfBirth: "01/01/1990",
-      phoneNumber: "555-1234",
-      lastAppointmentDate: "02/15/2022",
-    },
-    {
-      id: 3,
-      firstName: "John",
-      lastName: "Doe",
-      patientId: "12345",
-      gender: "Male",
-      dateOfBirth: "01/01/1990",
-      phoneNumber: "555-1234",
-      lastAppointmentDate: "02/15/2022",
-    },
-    {
-      id: 4,
-      firstName: "John",
-      lastName: "Doe",
-      patientId: "12345",
-      gender: "Male",
-      dateOfBirth: "01/01/1990",
-      phoneNumber: "555-1234",
-      lastAppointmentDate: "02/15/2022",
-    },
-    {
-      id: 5,
-      firstName: "John",
-      lastName: "Doe",
-      patientId: "12345",
-      gender: "Male",
-      dateOfBirth: "01/01/1990",
-      phoneNumber: "555-1234",
-      lastAppointmentDate: "02/15/2022",
-    },
-    {
-      id: 6,
-      firstName: "John",
-      lastName: "Doe",
-      patientId: "12345",
-      gender: "Male",
-      dateOfBirth: "01/01/1990",
-      phoneNumber: "555-1234",
-      lastAppointmentDate: "02/15/2022",
-    },
-    {
-      id: 7,
-      firstName: "John",
-      lastName: "Doe",
-      patientId: "12345",
-      gender: "Male",
-      dateOfBirth: "01/01/1990",
-      phoneNumber: "555-1234",
-      lastAppointmentDate: "02/15/2022",
-    },
-    // Add more data objects as needed
-  ];
 
-  const columns = [
-    {
-      name: "Patient Name",
-      selector: (row: Patient) => `${row.firstName} ${row.lastName}`,
-      sortable: true,
-      with: "200px",
-    },
-    {
-      name: "Patient ID",
-      selector: (row: Patient) => row.patientId,
-      sortable: true,
-      with: "200px",
-    },
-    {
-      name: "Gender",
-      selector: (row: Patient) => row.gender,
-      sortable: true,
-    },
-    {
-      name: "Date of Birth",
-      selector: (row: Patient) => row.dateOfBirth,
-      sortable: true,
-      with: "200px",
-    },
-    {
-      name: "Phone Number",
-      selector: (row: Patient) => row.phoneNumber,
-      sortable: true,
-      with: "200px",
-    },
-    {
-      name: "Date of Last Appointment",
-      selector: (row: Patient) => row.lastAppointmentDate,
-      sortable: true,
-      with: "500px",
-    },
-  ];
-
-  const navigate = useNavigate();
-  const handleRowClick = (patientId: number) => {
-    navigate(`/patients/${patientId}`);
+  const billSource = (row: any) => {
+    if (row.itemType === "labs") return "Laboratory";
+    if (row.itemType === "radiology") return "Radiology";
+    if (row.itemType === "consultations") return "Consultation";
+    if (row.itemType === "administered-drugs") return "Pharmacy";
+    return row.itemType || "—";
   };
 
+  const outstandingColumns = [
+    {
+      name: "Date",
+      selector: (row: any) => formatDate(row.createdAt),
+      sortable: true,
+    },
+    {
+      name: "Source",
+      selector: (row: any) => billSource(row),
+      sortable: true,
+    },
+    {
+      name: "Amount",
+      selector: (row: any) =>
+        `₦${Number(row.amount || 0).toLocaleString()}`,
+      sortable: true,
+    },
+    {
+      name: "Status",
+      selector: () => "Outstanding",
+    },
+  ];
+
+  const receiptColumns = [
+    {
+      name: "Date",
+      selector: (row: any) => formatDate(row.timeOfPayment || row.createdAt),
+      sortable: true,
+    },
+    {
+      name: "Receipt",
+      selector: (row: any) => row.receipt || "—",
+      sortable: true,
+    },
+    {
+      name: "Payment Type",
+      selector: (row: any) => row.type || "—",
+    },
+    {
+      name: "Amount",
+      selector: (row: any) => {
+        const total = Array.isArray(row.total)
+          ? row.total.reduce((a: number, b: number) => a + b, 0)
+          : Number(row.amount || 0);
+        return `₦${Number(total).toLocaleString()}`;
+      },
+      sortable: true,
+    },
+  ];
+
+  const bills = outstanding?.data?.finances || [];
+  const paid = receipts?.data?.finances || [];
+
   return (
-    <div>
-      <DataTable
-        columns={columns}
-        data={data}
-        onRowClicked={(row) => handleRowClick(row.id)}
-      />
+    <div className="space-y-8 py-4">
+      <div className="flex items-center justify-between">
+        <h3 className="text-ha-primary1 font-semibold">Outstanding Bills</h3>
+        <Link
+          to={`/finance/${id}`}
+          className="text-sm text-ha-primary1 underline"
+        >
+          Open billing desk
+        </Link>
+      </div>
+      {Array.isArray(bills) && bills.length > 0 ? (
+        <DataTable columns={outstandingColumns} data={bills} pagination />
+      ) : (
+        <div className="flex flex-col items-center py-8 text-gray-500">
+          <img src="/empty-list.svg" alt="" className="w-24 mb-2 opacity-70" />
+          <p>No outstanding bills for this patient.</p>
+        </div>
+      )}
+
+      <h3 className="text-ha-primary1 font-semibold">Payment History</h3>
+      {Array.isArray(paid) && paid.length > 0 ? (
+        <DataTable columns={receiptColumns} data={paid} pagination />
+      ) : (
+        <div className="flex flex-col items-center py-8 text-gray-500">
+          <img src="/empty-list.svg" alt="" className="w-24 mb-2 opacity-70" />
+          <p>No payments recorded yet.</p>
+        </div>
+      )}
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import Dashboard from "./pages/dashboard";
 import Patients from "./pages/patients";
@@ -43,6 +43,7 @@ function App() {
         <Route path="/forgot" element={<ForgotPassword />} />
         {/* routes in the applayout */}
         <Route path="/" element={<AppLayout />}>
+          <Route index element={<Navigate to="/dashboard" replace />} />
           <Route
             path="/dashboard"
             element={

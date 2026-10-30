@@ -1,7 +1,6 @@
-import { useQuery, useMutation, QueryClient } from "react-query";
+import { useQuery, useMutation } from "react-query";
+import { queryClient } from "../../lib/queryClient";
 import SchemeService, { NewSchemeData } from "../../services/schemeService";
-
-const queryClient = new QueryClient();
 
 export const useGetScheme = () => {
   return useQuery("Scheme", SchemeService.getScheme);

@@ -4,10 +4,11 @@ import { MultiSelect } from "react-multi-select-component";
 const options = [
   { label: "Doctor", value: "doctor" },
   { label: "Laboratory", value: "laboratory" },
-  { label: "Radiology", value: "Radiology" },
+  { label: "Radiology", value: "radiology" },
   { label: "Patients", value: "Patients" },
   { label: "Pharmacy", value: "Pharmacy" },
   { label: "Nursing", value: "Nursing" },
+  { label: "Admin", value: "admin" },
 ];
 
 function AddUser({ setFormData }) {
