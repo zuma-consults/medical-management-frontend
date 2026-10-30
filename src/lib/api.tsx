@@ -3,7 +3,7 @@ import { toast } from "react-toastify";
 import { Cookies } from "react-cookie";
 
 const client = axios.create({
-  baseURL: "https://medopt-pilj.onrender.com/api/v1/",
+  baseURL: import.meta.env.VITE_API_URL || "http://localhost:4040/api/v1/",
 });
 
 // Function to handle navigation
